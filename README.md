@@ -5,7 +5,7 @@ A simple Node.js script that fetches current weather data for a specified city u
 ## 🔧 Requirements
 
 - Node.js (recommended: v18+)
-- A free API key from [OpenWeatherMap](https://openweathermap.org/api)
+- A free API key from [OpenMetheo](https://open-meteo.com/en/docs)
 
 ## 🚀 Setup
 
