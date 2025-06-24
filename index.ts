@@ -26,9 +26,9 @@ async function getWeather(city?: string) {
   };
 
   try {
-    const response = await fetchWeatherApi(`${baseUrl}/forecast`, params);
+    const response = await axios.get(`${baseUrl}/forecast`, { params });
 
-    console.log("Weather data:", response);
+    console.log("Weather data:", response.data);
   } catch (error) {
     console.error("Error fetching weather data:", error);
   }
@@ -36,9 +36,7 @@ async function getWeather(city?: string) {
 
 async function fetchGeocodingApi(city: string): Promise<GeocodeInterface> {
   const response = await axios.get(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
-      city
-    )}&countryCode=DE&count=1`
+    `https://geocoding-api.open-meteo.com/v1/search?name=${city}&countryCode=DE&count=1`
   );
 
   const data: GeocodeResponseInterface = response.data;

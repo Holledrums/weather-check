@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const openmeteo_1 = require("openmeteo");
 dotenv_1.default.config();
 const API_BASE_URL = process.env.WEATHER_API_BASE_URL;
 function getWeather(city) {
@@ -29,8 +28,8 @@ function getWeather(city) {
             current_weather: true,
         };
         try {
-            const response = yield (0, openmeteo_1.fetchWeatherApi)(`${baseUrl}/forecast`, params);
-            console.log("Weather data:", response);
+            const response = yield axios_1.default.get(`${baseUrl}/forecast`, { params });
+            console.log("Weather data:", response.data);
         }
         catch (error) {
             console.error("Error fetching weather data:", error);
@@ -39,7 +38,7 @@ function getWeather(city) {
 }
 function fetchGeocodingApi(city) {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield axios_1.default.get(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&countryCode=DE&count=1`);
+        const response = yield axios_1.default.get(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&countryCode=DE&count=1`);
         const data = response.data;
         const geocode = data.results.find((geocode) => geocode.name.toLowerCase() === city.toLowerCase());
         if (!geocode) {
