@@ -4,13 +4,16 @@
   "description": "A simple Node.js script that fetches current weather data for a specified city using the OpenWeatherMap API and prints it to the console.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "ts-node index.ts"
   },
   "author": "Holger",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.10.0",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "openmeteo": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.3",
