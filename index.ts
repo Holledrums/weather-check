@@ -1,10 +1,10 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { fetchWeatherApi } from "openmeteo";
+import { weatherMapper } from "./mapper/weather.mapper";
 import {
   GeocodeInterface,
   GeocodeResponseInterface,
-} from "./dtos/geocode.interface";
+} from "./interfaces/geocode.interface";
 
 dotenv.config();
 
@@ -29,6 +29,8 @@ async function getWeather(city?: string) {
     const response = await axios.get(`${baseUrl}/forecast`, { params });
 
     console.log("Weather data:", response.data);
+
+    // return weatherMapper(response.data, geocode);
   } catch (error) {
     console.error("Error fetching weather data:", error);
   }

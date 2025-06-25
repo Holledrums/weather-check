@@ -30,6 +30,7 @@ function getWeather(city) {
         try {
             const response = yield axios_1.default.get(`${baseUrl}/forecast`, { params });
             console.log("Weather data:", response.data);
+            // return weatherMapper(response.data, geocode);
         }
         catch (error) {
             console.error("Error fetching weather data:", error);
