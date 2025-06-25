@@ -17,6 +17,8 @@ async function getWeather(city?: string) {
   }`;
 
   const geocode = await fetchGeocodingApi(targetCity);
+  console.log(geocode);
+
   const { latitude, longitude } = geocode;
 
   const params = {

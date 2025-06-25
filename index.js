@@ -21,6 +21,7 @@ function getWeather(city) {
         const targetCity = city || process.env.DEFAULT_CITY || "Berlin";
         const baseUrl = `${API_BASE_URL ? API_BASE_URL : "https://api.open-meteo.com/v1/"}`;
         const geocode = yield fetchGeocodingApi(targetCity);
+        console.log(geocode);
         const { latitude, longitude } = geocode;
         const params = {
             latitude,
