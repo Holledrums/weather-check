@@ -8,8 +8,8 @@ class MyWeatherDto {
         this.temperature = ""; // e.g., 15.5 for 15.5°C
         this.windspeed = ""; // e.g., 10.2 for 10.2 km/h
         this.winddirection = ""; // e.g., 180 for south
-        this.isDay = ""; // "1" for day, "0" for night
-        this.weathercode = ""; // WMO code, e.g., "800" for clear sky
+        this.isDay = 0; // "1" for day, "0" for night
+        this.weatherDescription = ""; // WMO code, e.g., "800" for clear sky
     }
 }
 exports.MyWeatherDto = MyWeatherDto;

@@ -5,5 +5,5 @@ export class MyWeatherDto {
   windspeed: string = ""; // e.g., 10.2 for 10.2 km/h
   winddirection: string = ""; // e.g., 180 for south
   isDay: number = 0; // "1" for day, "0" for night
-  weathercode: string = ""; // WMO code, e.g., "800" for clear sky
+  weatherDescription: string = ""; // WMO code, e.g., "800" for clear sky
 }

@@ -5,19 +5,19 @@ import {
   GeocodeInterface,
   GeocodeResponseInterface,
 } from "./interfaces/geocode.interface";
+import { MyWeatherDto } from "./dtos/my-weather.dto";
 
 dotenv.config();
 
 const API_BASE_URL = process.env.WEATHER_API_BASE_URL;
 
-async function getWeather(city?: string) {
+async function getWeather(city?: string): Promise<MyWeatherDto | undefined> {
   const targetCity = city || process.env.DEFAULT_CITY || "Berlin";
   const baseUrl = `${
     API_BASE_URL ? API_BASE_URL : "https://api.open-meteo.com/v1/"
   }`;
 
   const geocode = await fetchGeocodingApi(targetCity);
-  console.log(geocode);
 
   const { latitude, longitude } = geocode;
 
@@ -30,9 +30,7 @@ async function getWeather(city?: string) {
   try {
     const response = await axios.get(`${baseUrl}/forecast`, { params });
 
-    console.log("Weather data:", response.data);
-
-    // return weatherMapper(response.data, geocode);
+    return weatherMapper(response.data, geocode);
   } catch (error) {
     console.error("Error fetching weather data:", error);
   }
@@ -57,4 +55,10 @@ async function fetchGeocodingApi(city: string): Promise<GeocodeInterface> {
   return geocode;
 }
 
-getWeather();
+getWeather(process.argv[2])
+  .then((weather) => {
+    console.log(weather);
+  })
+  .catch((error) => {
+    console.error("Error:", error.message);
+  });

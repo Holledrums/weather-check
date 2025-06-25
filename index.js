@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const weather_mapper_1 = require("./mapper/weather.mapper");
 dotenv_1.default.config();
 const API_BASE_URL = process.env.WEATHER_API_BASE_URL;
 function getWeather(city) {
@@ -21,7 +22,6 @@ function getWeather(city) {
         const targetCity = city || process.env.DEFAULT_CITY || "Berlin";
         const baseUrl = `${API_BASE_URL ? API_BASE_URL : "https://api.open-meteo.com/v1/"}`;
         const geocode = yield fetchGeocodingApi(targetCity);
-        console.log(geocode);
         const { latitude, longitude } = geocode;
         const params = {
             latitude,
@@ -30,8 +30,7 @@ function getWeather(city) {
         };
         try {
             const response = yield axios_1.default.get(`${baseUrl}/forecast`, { params });
-            console.log("Weather data:", response.data);
-            // return weatherMapper(response.data, geocode);
+            return (0, weather_mapper_1.weatherMapper)(response.data, geocode);
         }
         catch (error) {
             console.error("Error fetching weather data:", error);
@@ -49,4 +48,10 @@ function fetchGeocodingApi(city) {
         return geocode;
     });
 }
-getWeather();
+getWeather(process.argv[2])
+    .then((weather) => {
+    console.log(weather);
+})
+    .catch((error) => {
+    console.error("Error:", error.message);
+});

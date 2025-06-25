@@ -1,11 +1,12 @@
 import { MyWeatherDto } from "../dtos/my-weather.dto";
 import { GeocodeInterface } from "../interfaces/geocode.interface";
 import { WeatherDataResponse } from "../interfaces/weather-data-respomse.interface";
+import { weatherCodeMap } from "../weather-map/weater-code-map";
 
 export function weatherMapper(
   forecast: WeatherDataResponse,
   geocode: GeocodeInterface
-) {
+): MyWeatherDto {
   const currentWeather = forecast.current_weather;
   const currentUnits = forecast.current_weather_units;
 
@@ -17,21 +18,22 @@ export function weatherMapper(
   myWeather.temperature = `${currentWeather.temperature} ${currentUnits.temperature}`;
   myWeather.winddirection = getCardinalDirections(currentWeather.winddirection);
   myWeather.windspeed = `${currentWeather.windspeed} ${currentUnits.windspeed}`;
-  myWeather.weathercode = currentWeather.weathercode
-    .toString()
-    .padStart(3, "0");
+  myWeather.weatherDescription =
+    weatherCodeMap[currentWeather.weathercode] || "Unbekannt";
+
+  return myWeather;
 }
 
 function getCardinalDirections(degrees: number): string {
   const directions = [
     "N",
-    "NNE",
-    "NE",
-    "ENE",
-    "E",
-    "ESE",
-    "SE",
-    "SSE",
+    "NNO",
+    "NO",
+    "ONO",
+    "O",
+    "OSO",
+    "SO",
+    "SSO",
     "S",
     "SSW",
     "SW",
