@@ -55,14 +55,14 @@ function getCardinalDirections(degrees) {
 }
 function decodePrecipitation(value) {
     if (value === 0)
-        return "Kein Regen ☀️";
+        return "Kein Regen";
     if (value > 0 && value <= 0.2)
-        return "Ein paar Tropfen 🌤️";
+        return "Ein paar Tropfen";
     if (value > 0.2 && value <= 1)
-        return "Leichter Regen 🌦️";
+        return "Leichter Regen";
     if (value > 1 && value <= 5)
-        return "Regen 🌧️";
+        return "Regen";
     if (value > 5 && value <= 10)
-        return "Starker Regen 🌧️🌧️";
-    return "Heftiger Regen ⛈️";
+        return "Starker Regen";
+    return "Heftiger Regen";
 }

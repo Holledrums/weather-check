@@ -73,10 +73,10 @@ function getCardinalDirections(degrees: number): string {
   return directions[index % 16];
 }
 function decodePrecipitation(value: number): string {
-  if (value === 0) return "Kein Regen ☀️";
-  if (value > 0 && value <= 0.2) return "Ein paar Tropfen 🌤️";
-  if (value > 0.2 && value <= 1) return "Leichter Regen 🌦️";
-  if (value > 1 && value <= 5) return "Regen 🌧️";
-  if (value > 5 && value <= 10) return "Starker Regen 🌧️🌧️";
-  return "Heftiger Regen ⛈️";
+  if (value === 0) return "Kein Regen";
+  if (value > 0 && value <= 0.2) return "Ein paar Tropfen";
+  if (value > 0.2 && value <= 1) return "Leichter Regen";
+  if (value > 1 && value <= 5) return "Regen";
+  if (value > 5 && value <= 10) return "Starker Regen";
+  return "Heftiger Regen";
 }
