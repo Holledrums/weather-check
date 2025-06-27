@@ -29,8 +29,10 @@ function getWeather(city) {
             current_weather: true,
         };
         try {
-            const response = yield axios_1.default.get(`${baseUrl}/forecast`, { params });
-            return (0, weather_mapper_1.weatherMapper)(response.data, geocode);
+            const forecastResponse = yield axios_1.default.get(`${baseUrl}/forecast`, {
+                params,
+            });
+            return (0, weather_mapper_1.weatherMapper)(forecastResponse.data, geocode);
         }
         catch (error) {
             console.error("Error fetching weather data:", error);
@@ -39,13 +41,22 @@ function getWeather(city) {
 }
 function fetchGeocodingApi(city) {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield axios_1.default.get(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&countryCode=DE&count=1`);
-        const data = response.data;
-        const geocode = data.results.find((geocode) => geocode.name.toLowerCase() === city.toLowerCase());
-        if (!geocode) {
-            throw new Error(`Geocode not found for city: ${city}`);
+        try {
+            const response = yield axios_1.default.get(`https://geocoding-api.open-meteo.com/v1/search`, { params: { name: city, countryCode: "DE", count: 1 } });
+            const geocode = response.data.results.find((g) => g.name.toLowerCase() === city.toLowerCase());
+            if (!geocode) {
+                throw new Error(`Kein Geocode für "${city}" gefunden.`);
+            }
+            return geocode;
         }
-        return geocode;
+        catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Fehler bei der Geocoding-Abfrage: ${error.message}`);
+            }
+            else {
+                throw new Error(`Fehler bei der Geocoding-Abfrage: ${String(error)}`);
+            }
+        }
     });
 }
 getWeather(process.argv[2])

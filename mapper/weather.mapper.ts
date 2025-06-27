@@ -1,6 +1,6 @@
 import { MyWeatherDto } from "../dtos/my-weather.dto";
 import { GeocodeInterface } from "../interfaces/geocode.interface";
-import { WeatherDataResponse } from "../interfaces/weather-data-respomse.interface";
+import { WeatherDataResponse } from "../interfaces/weather-data-response.interface";
 import { weatherCodeMap } from "../weather-map/weater-code-map";
 
 export function weatherMapper(

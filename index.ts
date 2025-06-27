@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import dotenv from "dotenv";
 import { weatherMapper } from "./mapper/weather.mapper";
 import {
@@ -6,6 +6,7 @@ import {
   GeocodeResponseInterface,
 } from "./interfaces/geocode.interface";
 import { MyWeatherDto } from "./dtos/my-weather.dto";
+import { WeatherDataResponse } from "./interfaces/weather-data-response.interface";
 
 dotenv.config();
 
@@ -28,31 +29,40 @@ async function getWeather(city?: string): Promise<MyWeatherDto | undefined> {
   };
 
   try {
-    const response = await axios.get(`${baseUrl}/forecast`, { params });
+    const forecastResponse: AxiosResponse<WeatherDataResponse> =
+      await axios.get(`${baseUrl}/forecast`, {
+        params,
+      });
 
-    return weatherMapper(response.data, geocode);
+    return weatherMapper(forecastResponse.data, geocode);
   } catch (error) {
     console.error("Error fetching weather data:", error);
   }
 }
 
 async function fetchGeocodingApi(city: string): Promise<GeocodeInterface> {
-  const response = await axios.get(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${city}&countryCode=DE&count=1`
-  );
+  try {
+    const response = await axios.get<GeocodeResponseInterface>(
+      `https://geocoding-api.open-meteo.com/v1/search`,
+      { params: { name: city, countryCode: "DE", count: 1 } }
+    );
 
-  const data: GeocodeResponseInterface = response.data;
+    const geocode = response.data.results.find(
+      (g) => g.name.toLowerCase() === city.toLowerCase()
+    );
 
-  const geocode = data.results.find(
-    (geocode: GeocodeInterface) =>
-      geocode.name.toLowerCase() === city.toLowerCase()
-  );
+    if (!geocode) {
+      throw new Error(`Kein Geocode für "${city}" gefunden.`);
+    }
 
-  if (!geocode) {
-    throw new Error(`Geocode not found for city: ${city}`);
+    return geocode;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Fehler bei der Geocoding-Abfrage: ${error.message}`);
+    } else {
+      throw new Error(`Fehler bei der Geocoding-Abfrage: ${String(error)}`);
+    }
   }
-
-  return geocode;
 }
 
 getWeather(process.argv[2])
