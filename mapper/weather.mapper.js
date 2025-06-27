@@ -22,7 +22,7 @@ function weatherMapper(forecast, geocode) {
                 winddirection: getCardinalDirections(hourly.wind_direction_10m[i]),
                 isDay: hourly.is_day[i],
                 weatherDescription: weater_code_map_1.weatherCodeMap[hourly.weathercode[i]] || "Unbekannt",
-                precipitation: `${hourly.precipitation[i]}`,
+                precipitation: decodePrecipitation(hourly.precipitation[i]),
             });
         }
     }
@@ -52,4 +52,17 @@ function getCardinalDirections(degrees) {
     ];
     const index = Math.round((degrees % 360) / 22.5);
     return directions[index % 16];
+}
+function decodePrecipitation(value) {
+    if (value === 0)
+        return "Kein Regen ☀️";
+    if (value > 0 && value <= 0.2)
+        return "Ein paar Tropfen 🌤️";
+    if (value > 0.2 && value <= 1)
+        return "Leichter Regen 🌦️";
+    if (value > 1 && value <= 5)
+        return "Regen 🌧️";
+    if (value > 5 && value <= 10)
+        return "Starker Regen 🌧️🌧️";
+    return "Heftiger Regen ⛈️";
 }
