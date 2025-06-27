@@ -1,4 +1,7 @@
-import { MyWeatherDto } from "../dtos/my-weather.dto";
+import {
+  HourlyForecastInterface,
+  MyWeatherInterface,
+} from "../interfaces/my-weather.interface";
 import { GeocodeInterface } from "../interfaces/geocode.interface";
 import { WeatherDataResponse } from "../interfaces/weather-data-response.interface";
 import { weatherCodeMap } from "../weather-map/weater-code-map";
@@ -6,22 +9,45 @@ import { weatherCodeMap } from "../weather-map/weater-code-map";
 export function weatherMapper(
   forecast: WeatherDataResponse,
   geocode: GeocodeInterface
-): MyWeatherDto {
-  const currentWeather = forecast.current_weather;
-  const currentUnits = forecast.current_weather_units;
+): MyWeatherInterface {
+  const hourly = forecast.hourly;
 
-  const myWeather = new MyWeatherDto();
+  if (!hourly) {
+    throw new Error("Fehlende hourly-Daten in der Forecast-Response");
+  }
 
-  myWeather.city = geocode.name;
-  myWeather.time = currentWeather.time;
-  myWeather.isDay = currentWeather.is_day;
-  myWeather.temperature = `${currentWeather.temperature} ${currentUnits.temperature}`;
-  myWeather.winddirection = getCardinalDirections(currentWeather.winddirection);
-  myWeather.windspeed = `${currentWeather.windspeed} ${currentUnits.windspeed}`;
-  myWeather.weatherDescription =
-    weatherCodeMap[currentWeather.weathercode] || "Unbekannt";
+  const now = new Date();
+  now.setMinutes(0, 0, 0); // Runde auf volle Stunde
 
-  return myWeather;
+  const hoursToInclude = 6;
+
+  const forecastEntries: HourlyForecastInterface[] = [];
+
+  for (let i = 0; i < hourly.time.length; i++) {
+    const timestamp = new Date(hourly.time[i]);
+
+    if (timestamp >= now && forecastEntries.length < hoursToInclude) {
+      forecastEntries.push({
+        time: hourly.time[i],
+        temperature: `${hourly.temperature_2m[i]} ${
+          forecast.hourly_units?.temperature_2m || "°C"
+        }`,
+        windspeed: `${hourly.wind_speed_10m[i]} ${
+          forecast.hourly_units?.wind_speed_10m || "km/h"
+        }`,
+        winddirection: getCardinalDirections(hourly.wind_direction_10m[i]),
+        isDay: hourly.is_day[i],
+        weatherDescription:
+          weatherCodeMap[hourly.weathercode[i]] || "Unbekannt",
+        precipitation: `${hourly.precipitation[i]}`,
+      });
+    }
+  }
+
+  return {
+    city: geocode.name,
+    forecast: forecastEntries,
+  };
 }
 
 function getCardinalDirections(degrees: number): string {

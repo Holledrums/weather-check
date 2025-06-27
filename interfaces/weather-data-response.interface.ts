@@ -1,3 +1,23 @@
+export interface HourlyWeatherData {
+  time: string[]; // ISO-Zeitstempel für jede Stunde
+  temperature_2m: number[];
+  precipitation: number[];
+  wind_speed_10m: number[];
+  wind_direction_10m: number[]; // in Grad
+  is_day: number[]; // 1 für Tag, 0 für Nacht
+  weathercode: number[]; // WMO-Code
+}
+
+export interface HourlyUnits {
+  time: string;
+  temperature_2m: string;
+  precipitation: string;
+  wind_speed_10m: string;
+  wind_direction_10m: string; // in degrees
+  is_day: string; // 1 für Tag, 0 für Nacht
+  weathercode: string; // WMO code
+}
+
 export interface CurrentWeatherUnits {
   time: string; // ISO 8601 format
   interval: string; // in seconds
@@ -26,6 +46,8 @@ export interface WeatherDataResponse {
   timezone: string; // e.g., "Europe/Berlin"
   timezone_abbreviation: string; // e.g., "GMT"
   elevation: number; // elevation in meters
-  current_weather_units: CurrentWeatherUnits;
-  current_weather: CurrentWeather;
+  current_weather_units?: CurrentWeatherUnits;
+  current_weather?: CurrentWeather;
+  hourly_units?: HourlyUnits;
+  hourly?: HourlyWeatherData;
 }

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const weather_mapper_1 = require("./mapper/weather.mapper");
+const console_1 = require("console");
 dotenv_1.default.config();
 const API_BASE_URL = process.env.WEATHER_API_BASE_URL;
 function getWeather(city) {
@@ -23,15 +24,31 @@ function getWeather(city) {
         const baseUrl = `${API_BASE_URL ? API_BASE_URL : "https://api.open-meteo.com/v1/"}`;
         const geocode = yield fetchGeocodingApi(targetCity);
         const { latitude, longitude } = geocode;
+        const timeNow = new Date();
+        const today = timeNow.toISOString().split("T")[0];
+        const tomorrow = new Date(timeNow.getTime() + 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split("T")[0];
         const params = {
             latitude,
             longitude,
-            current_weather: true,
+            hourly: [
+                "temperature_2m",
+                "precipitation",
+                "wind_speed_10m",
+                "wind_direction_10m",
+                "is_day",
+                "weathercode",
+            ],
+            start_date: today,
+            end_date: tomorrow,
+            timezone: "auto",
         };
         try {
             const forecastResponse = yield axios_1.default.get(`${baseUrl}/forecast`, {
                 params,
             });
+            (0, console_1.log)("Forecast Response:", forecastResponse.data);
             return (0, weather_mapper_1.weatherMapper)(forecastResponse.data, geocode);
         }
         catch (error) {

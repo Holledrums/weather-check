@@ -5,14 +5,17 @@ import {
   GeocodeInterface,
   GeocodeResponseInterface,
 } from "./interfaces/geocode.interface";
-import { MyWeatherDto } from "./dtos/my-weather.dto";
+import { MyWeatherInterface } from "./interfaces/my-weather.interface";
 import { WeatherDataResponse } from "./interfaces/weather-data-response.interface";
+import { log } from "console";
 
 dotenv.config();
 
 const API_BASE_URL = process.env.WEATHER_API_BASE_URL;
 
-async function getWeather(city?: string): Promise<MyWeatherDto | undefined> {
+async function getWeather(
+  city?: string
+): Promise<MyWeatherInterface | undefined> {
   const targetCity = city || process.env.DEFAULT_CITY || "Berlin";
   const baseUrl = `${
     API_BASE_URL ? API_BASE_URL : "https://api.open-meteo.com/v1/"
@@ -22,10 +25,26 @@ async function getWeather(city?: string): Promise<MyWeatherDto | undefined> {
 
   const { latitude, longitude } = geocode;
 
+  const timeNow = new Date();
+  const today = timeNow.toISOString().split("T")[0];
+  const tomorrow = new Date(timeNow.getTime() + 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
+
   const params = {
     latitude,
     longitude,
-    current_weather: true,
+    hourly: [
+      "temperature_2m",
+      "precipitation",
+      "wind_speed_10m",
+      "wind_direction_10m",
+      "is_day",
+      "weathercode",
+    ],
+    start_date: today,
+    end_date: tomorrow,
+    timezone: "auto",
   };
 
   try {
@@ -33,6 +52,8 @@ async function getWeather(city?: string): Promise<MyWeatherDto | undefined> {
       await axios.get(`${baseUrl}/forecast`, {
         params,
       });
+
+    log("Forecast Response:", forecastResponse.data);
 
     return weatherMapper(forecastResponse.data, geocode);
   } catch (error) {

@@ -1,21 +1,35 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.weatherMapper = weatherMapper;
-const my_weather_dto_1 = require("../dtos/my-weather.dto");
 const weater_code_map_1 = require("../weather-map/weater-code-map");
 function weatherMapper(forecast, geocode) {
-    const currentWeather = forecast.current_weather;
-    const currentUnits = forecast.current_weather_units;
-    const myWeather = new my_weather_dto_1.MyWeatherDto();
-    myWeather.city = geocode.name;
-    myWeather.time = currentWeather.time;
-    myWeather.isDay = currentWeather.is_day;
-    myWeather.temperature = `${currentWeather.temperature} ${currentUnits.temperature}`;
-    myWeather.winddirection = getCardinalDirections(currentWeather.winddirection);
-    myWeather.windspeed = `${currentWeather.windspeed} ${currentUnits.windspeed}`;
-    myWeather.weatherDescription =
-        weater_code_map_1.weatherCodeMap[currentWeather.weathercode] || "Unbekannt";
-    return myWeather;
+    var _a, _b;
+    const hourly = forecast.hourly;
+    if (!hourly) {
+        throw new Error("Fehlende hourly-Daten in der Forecast-Response");
+    }
+    const now = new Date();
+    now.setMinutes(0, 0, 0); // Runde auf volle Stunde
+    const hoursToInclude = 6;
+    const forecastEntries = [];
+    for (let i = 0; i < hourly.time.length; i++) {
+        const timestamp = new Date(hourly.time[i]);
+        if (timestamp >= now && forecastEntries.length < hoursToInclude) {
+            forecastEntries.push({
+                time: hourly.time[i],
+                temperature: `${hourly.temperature_2m[i]} ${((_a = forecast.hourly_units) === null || _a === void 0 ? void 0 : _a.temperature_2m) || "°C"}`,
+                windspeed: `${hourly.wind_speed_10m[i]} ${((_b = forecast.hourly_units) === null || _b === void 0 ? void 0 : _b.wind_speed_10m) || "km/h"}`,
+                winddirection: getCardinalDirections(hourly.wind_direction_10m[i]),
+                isDay: hourly.is_day[i],
+                weatherDescription: weater_code_map_1.weatherCodeMap[hourly.weathercode[i]] || "Unbekannt",
+                precipitation: `${hourly.precipitation[i]}`,
+            });
+        }
+    }
+    return {
+        city: geocode.name,
+        forecast: forecastEntries,
+    };
 }
 function getCardinalDirections(degrees) {
     const directions = [
